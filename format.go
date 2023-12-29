@@ -2,6 +2,7 @@ package eris
 
 import (
 	"fmt"
+	"sort"
 )
 
 // FormatOptions defines output options like omitting stack traces and inverting the error or stack order.
@@ -42,15 +43,15 @@ func NewDefaultStringFormat(options FormatOptions) StringFormat {
 //
 // An error without trace will be formatted as follows:
 //
-//   <Wrap error msg>: <Root error msg>
+//	<Wrap error msg>: <Root error msg>
 //
 // An error with trace will be formatted as follows:
 //
-//   <Wrap error msg>
-//     <Method2>:<File2>:<Line2>
-//   <Root error msg>
-//     <Method2>:<File2>:<Line2>
-//     <Method1>:<File1>:<Line1>
+//	<Wrap error msg>
+//	  <Method2>:<File2>:<Line2>
+//	<Root error msg>
+//	  <Method2>:<File2>:<Line2>
+//	  <Method1>:<File1>:<Line1>
 func ToString(err error, withTrace bool) string {
 	return ToCustomString(err, NewDefaultStringFormat(FormatOptions{
 		WithTrace:    withTrace,
@@ -63,15 +64,15 @@ func ToString(err error, withTrace bool) string {
 // To declare custom format, the Format object has to be passed as an argument.
 // An error without trace will be formatted as follows:
 //
-//   <Wrap error msg>[Format.ErrorSep]<Root error msg>
+//	<Wrap error msg>[Format.ErrorSep]<Root error msg>
 //
 // An error with trace will be formatted as follows:
 //
-//   <Wrap error msg>[Format.MsgStackSep]
-//   [Format.PreStackSep]<Method2>[Format.StackElemSep]<File2>[Format.StackElemSep]<Line2>[Format.ErrorSep]
-//   <Root error msg>[Format.MsgStackSep]
-//   [Format.PreStackSep]<Method2>[Format.StackElemSep]<File2>[Format.StackElemSep]<Line2>[Format.ErrorSep]
-//   [Format.PreStackSep]<Method1>[Format.StackElemSep]<File1>[Format.StackElemSep]<Line1>[Format.ErrorSep]
+//	<Wrap error msg>[Format.MsgStackSep]
+//	[Format.PreStackSep]<Method2>[Format.StackElemSep]<File2>[Format.StackElemSep]<Line2>[Format.ErrorSep]
+//	<Root error msg>[Format.MsgStackSep]
+//	[Format.PreStackSep]<Method2>[Format.StackElemSep]<File2>[Format.StackElemSep]<Line2>[Format.ErrorSep]
+//	[Format.PreStackSep]<Method1>[Format.StackElemSep]<File1>[Format.StackElemSep]<Line1>[Format.ErrorSep]
 func ToCustomString(err error, format StringFormat) string {
 	upErr := Unpack(err)
 
@@ -122,34 +123,34 @@ func NewDefaultJSONFormat(options FormatOptions) JSONFormat {
 //
 // An error without trace will be formatted as follows:
 //
-//   {
-//     "root": {
-//         "message": "Root error msg"
-//     },
-//     "wrap": [
-//       {
-//         "message": "Wrap error msg"
-//       }
-//     ]
-//   }
+//	{
+//	  "root": {
+//	      "message": "Root error msg"
+//	  },
+//	  "wrap": [
+//	    {
+//	      "message": "Wrap error msg"
+//	    }
+//	  ]
+//	}
 //
 // An error with trace will be formatted as follows:
 //
-//   {
-//     "root": {
-//       "message": "Root error msg",
-//       "stack": [
-//         "<Method2>:<File2>:<Line2>",
-//         "<Method1>:<File1>:<Line1>"
-//       ]
-//     },
-//     "wrap": [
-//       {
-//         "message": "Wrap error msg",
-//         "stack": "<Method2>:<File2>:<Line2>"
-//       }
-//     ]
-//   }
+//	{
+//	  "root": {
+//	    "message": "Root error msg",
+//	    "stack": [
+//	      "<Method2>:<File2>:<Line2>",
+//	      "<Method1>:<File1>:<Line1>"
+//	    ]
+//	  },
+//	  "wrap": [
+//	    {
+//	      "message": "Wrap error msg",
+//	      "stack": "<Method2>:<File2>:<Line2>"
+//	    }
+//	  ]
+//	}
 func ToJSON(err error, withTrace bool) map[string]interface{} {
 	return ToCustomJSON(err, NewDefaultJSONFormat(FormatOptions{
 		WithTrace:    withTrace,
@@ -162,34 +163,34 @@ func ToJSON(err error, withTrace bool) map[string]interface{} {
 // To declare custom format, the Format object has to be passed as an argument.
 // An error without trace will be formatted as follows:
 //
-//   {
-//     "root": {
-//       "message": "Root error msg",
-//     },
-//     "wrap": [
-//       {
-//         "message": "Wrap error msg'",
-//       }
-//     ]
-//   }
+//	{
+//	  "root": {
+//	    "message": "Root error msg",
+//	  },
+//	  "wrap": [
+//	    {
+//	      "message": "Wrap error msg'",
+//	    }
+//	  ]
+//	}
 //
 // An error with trace will be formatted as follows:
 //
-//   {
-//     "root": {
-//       "message": "Root error msg",
-//       "stack": [
-//         "<Method2>[Format.StackElemSep]<File2>[Format.StackElemSep]<Line2>",
-//         "<Method1>[Format.StackElemSep]<File1>[Format.StackElemSep]<Line1>"
-//       ]
-//     }
-//     "wrap": [
-//       {
-//         "message": "Wrap error msg",
-//         "stack": "<Method2>[Format.StackElemSep]<File2>[Format.StackElemSep]<Line2>"
-//       }
-//     ]
-//   }
+//	{
+//	  "root": {
+//	    "message": "Root error msg",
+//	    "stack": [
+//	      "<Method2>[Format.StackElemSep]<File2>[Format.StackElemSep]<Line2>",
+//	      "<Method1>[Format.StackElemSep]<File1>[Format.StackElemSep]<Line1>"
+//	    ]
+//	  }
+//	  "wrap": [
+//	    {
+//	      "message": "Wrap error msg",
+//	      "stack": "<Method2>[Format.StackElemSep]<File2>[Format.StackElemSep]<Line2>"
+//	    }
+//	  ]
+//	}
 func ToCustomJSON(err error, format JSONFormat) map[string]interface{} {
 	upErr := Unpack(err)
 
@@ -221,11 +222,19 @@ func ToCustomJSON(err error, format JSONFormat) map[string]interface{} {
 // Unpack returns a human-readable UnpackedError type for a given error.
 func Unpack(err error) UnpackedError {
 	var upErr UnpackedError
-	for err != nil {
-		switch err := err.(type) {
+	var lastRootErrIndex, lastExternalErrIndex int = -1, -1 // index from end of chain slice
+
+	errStack := []error{err}
+
+	for len(errStack) > 0 {
+		switch err := errStack[0].(type) {
 		case *rootError:
 			upErr.ErrRoot.Msg = err.msg
 			upErr.ErrRoot.Stack = err.stack.get()
+
+			link := ErrLink{Msg: err.msg, Frame: upErr.ErrRoot.Stack[0]} // convert ErrRoot to ErrLink
+			upErr.ErrChain = append([]ErrLink{link}, upErr.ErrChain...)
+			lastRootErrIndex = len(upErr.ErrChain) // index from end of slice
 		case *wrapError:
 			// prepend links in stack trace order
 			link := ErrLink{Msg: err.msg}
@@ -233,11 +242,53 @@ func Unpack(err error) UnpackedError {
 			upErr.ErrChain = append([]ErrLink{link}, upErr.ErrChain...)
 		default:
 			upErr.ErrExternal = err
-			return upErr
+
+			link := ErrLink{Msg: err.Error()} // convert ErrRoot to ErrLink
+			upErr.ErrChain = append([]ErrLink{link}, upErr.ErrChain...)
+			lastExternalErrIndex = len(upErr.ErrChain) // index from end of slice
 		}
-		err = Unwrap(err)
+
+		errStack = append(errStack[1:], unwrapArr(err)...)
 	}
+
+	indexesToRemove := []int{lastRootErrIndex, lastExternalErrIndex}
+	sort.Ints(indexesToRemove) // must remove from behind
+	lenOfChain := len(upErr.ErrChain)
+
+	for _, i := range indexesToRemove {
+		if i == -1 {
+			continue
+		}
+
+		i = lenOfChain - i
+		if i == 0 {
+			upErr.ErrChain = upErr.ErrChain[i+1:]
+		} else if i == len(upErr.ErrChain)-1 {
+			upErr.ErrChain = upErr.ErrChain[:i]
+		} else {
+			upErr.ErrChain = append(upErr.ErrChain[:i], upErr.ErrChain[i+1:]...) // remove element at i
+		}
+	}
+
 	return upErr
+}
+
+func unwrapArr(err error) []error {
+	u, ok := err.(interface {
+		Unwrap() error
+	})
+	if ok && u.Unwrap() != nil {
+		return []error{u.Unwrap()}
+	}
+
+	uArr, ok := err.(interface {
+		Unwrap() []error
+	})
+	if ok {
+		return uArr.Unwrap()
+	}
+
+	return nil
 }
 
 // UnpackedError represents complete information about an error.
